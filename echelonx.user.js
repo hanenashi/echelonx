@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EchelonX
 // @namespace    https://github.com/hanenashi/echelonx
-// @version      0.1.1
+// @version      0.1.2
 // @description  Resilient Okoun troll hider/deleter based on Echelonuv filtr, updated for newer Okoun layouts.
 // @author       echelon + hanenashi
 // @match        https://*.okoun.cz/*
@@ -59,7 +59,37 @@
             document.body;
     }
 
+    function closeOkounUserMenu() {
+        const menu = document.querySelector('.head .user .user-menu');
+        const backdrop = document.querySelector('.head .user .user-menu-backdrop');
+        const toggle = document.querySelector('.head .user .user-menu-toggle');
+        if (menu) menu.hidden = true;
+        if (backdrop) backdrop.hidden = true;
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function injectAvatarMenuItem() {
+        const menu = document.querySelector('.head .user .user-menu');
+        if (!menu || document.getElementById('echelonxMenuItem')) return false;
+        const item = document.createElement('button');
+        item.id = 'echelonxMenuItem';
+        item.type = 'button';
+        item.setAttribute('role', 'menuitem');
+        item.textContent = 'EchelonX';
+        item.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            closeOkounUserMenu();
+            togglePluginWidgetVisibility(event);
+        });
+        const cancel = menu.querySelector('.user-menu-cancel');
+        if (cancel) cancel.before(item);
+        else menu.appendChild(item);
+        return true;
+    }
+
     function ensureFloatingButton() {
+        if (injectAvatarMenuItem()) return null;
         let btn = document.getElementById('echelonxFloatingButton');
         if (btn) return btn;
         btn = document.createElement('button');
@@ -90,7 +120,7 @@
         toggle.addEventListener('click', togglePluginWidgetVisibility);
         widget = document.createElement('div');
         widget.id = 'echelonxPluginWidget';
-        widget.style.cssText = 'background:#fff;color:#000;border:2px solid #000;padding:10px;margin:5px;display:none;z-index:2147483647;position:fixed;right:8px;bottom:116px;max-width:min(420px,calc(100vw - 30px));max-height:70vh;overflow:auto;font:14px sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.45);';
+        widget.style.cssText = 'background:#fff;color:#000;border:2px solid #000;padding:10px;margin:5px;display:none;z-index:2147483647;position:fixed;right:8px;bottom:20px;max-width:min(420px,calc(100vw - 30px));max-height:78vh;overflow:auto;font:14px sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.45);';
         if (anchor && anchor !== document.body && anchor.parentNode) { anchor.after(document.createTextNode(' | ')); anchor.after(toggle); }
         document.body.appendChild(widget);
         ensureFloatingButton();
@@ -197,7 +227,10 @@
         hideSidebar();
         if (deletingEnabled) deletePosts(customDeletingEnabled ? blackList.concat(customBlackList) : blackList);
         if (filteringEnabled) hidePostsRegex(blackList.concat(customBlackList), minimizeOnly);
-        addPluginSettings(getPluginWidgetNode()); ensureFloatingButton(); updateBlackList(false);
+        addPluginSettings(getPluginWidgetNode());
+        injectAvatarMenuItem();
+        ensureFloatingButton();
+        updateBlackList(false);
     }
 
     run();
