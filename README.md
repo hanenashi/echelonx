@@ -4,7 +4,7 @@ EchelonX is a Tampermonkey userscript for **okoun.cz** that hides and optionally
 
 It is based on the original **Echelonuv filtr**, but updated for newer/mobile Okoun layouts and made less fragile.
 
-Current script version: **0.2.1**
+Current script version: **0.2.2**
 
 ## Install
 
@@ -31,7 +31,9 @@ It can:
 
 ## Menu / settings UI
 
-On newer Okoun mobile layout, EchelonX is wired into the avatar `...` menu.
+On desktop Okoun, EchelonX adds an inline **EchelonX** link next to the user settings/logout links in the page header.
+
+On newer Okoun mobile layout, EchelonX is also wired into the avatar `...` menu.
 
 Open it like this:
 
@@ -42,7 +44,7 @@ Open it like this:
 
 There is no separate EchelonX close button anymore. One close button is enough. We are not building airplane cockpit UI here.
 
-If the avatar menu cannot be found, EchelonX falls back to a small floating **EX** button.
+If neither desktop header actions nor the avatar menu can be found, EchelonX falls back to a small floating **EX** button.
 
 ## Settings
 
@@ -76,7 +78,7 @@ Original Echelonuv filtr was useful, but it expected older Okoun DOM structure. 
 EchelonX changes:
 
 - replaced brittle XPath/header assumptions with tolerant DOM selectors
-- moved settings into the current Okoun avatar `...` menu
+- moved settings into the current Okoun desktop header and avatar `...` menu
 - added mobile-friendly settings panel behavior
 - added explicit **Save + apply now** instead of relying on textarea blur/change timing
 - added immediate re-apply after saving settings

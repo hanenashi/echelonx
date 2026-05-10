@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         EchelonX
 // @namespace    https://github.com/hanenashi/echelonx
-// @version      0.2.1
-// @description  Okoun troll hider/deleter, updated for newer mobile Okoun menu.
+// @version      0.2.2
+// @description  Okoun troll hider/deleter, updated for newer/mobile and desktop Okoun menus.
 // @author       echelon + hanenashi
 // @match        https://*.okoun.cz/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=okoun.cz
@@ -17,7 +17,7 @@
   'use strict';
 
   const APP = 'EchelonX';
-  const VERSION = '0.2.1';
+  const VERSION = '0.2.2';
   const PFX = 'cz.ocs.EchelonX.';
   const defaultUsers = 'adijunkt, Bernhard_Weiss, bmn, Brandenburg, Bloodrot, Branimir, bretislav.jonas, d.smiricky, Dagobert_Durr, Das_Reich, florian_geyer, frantisek.kachna, Gotz_Berlichingen, Hajny_Filiburg, hamacek, Handschar, Hilfswilliger, horacek, Horst_Wessel, Charlemagne, Charlemagne_, Isidor, Januar, jarda.dusek, jasanek, Jurij_Ozerov, Kama, Karstjager, Koprovka, Knour, Kpt_Tuma, Landstorm_Netherland, Langemarck, Laser_eye, Lutzow, maqeo.cz, Maria_Theresia, mazurek, mazanej_lucifer, Mudrford, Neknubak, Nibelungen, Nord_, Norland, OberSturmKlippFurher, Oblazek, piANistka, Plch, Plsik_Liskovy, Polizei, pixicz, Prinz_Eugen, profesor_Birkermaier, Protez_alpska, prucha, ritna.diera, vojin.kouba, vonavka, Wallonien, Zufanek';
   const defaultPatterns = 'kouba$';
@@ -129,22 +129,33 @@
     vals.forEach(([id,k,d]) => { const el=document.getElementById(id); if(el) el.checked=getBool(k,d); });
     const t = document.getElementById('echelonxCustomText'); if (t) t.value = getVal(K.custom, 'testovaci.kakes');
   }
+  function panelHostFor(item) {
+    if (!item) return document.body;
+    if (item.closest('.user-menu')) return item;
+    return item.closest('.head .user') || item;
+  }
   function togglePanel(e) {
     e?.preventDefault(); e?.stopPropagation();
-    const item = document.getElementById('echelonxMenuItem'); const p = panel();
-    if (item && p.parentNode !== item.parentNode) item.after(p);
+    const item = e?.currentTarget || document.getElementById('echelonxMenuItem') || document.getElementById('echelonxDesktopMenuItem');
+    const p = panel();
+    const host = panelHostFor(item);
+    if (host && p.parentNode !== host.parentNode) host.after(p);
     refreshPanel(); p.hidden = !p.hidden;
-    item?.classList.toggle('echelonx-open', !p.hidden);
+    document.querySelectorAll('#echelonxMenuItem, #echelonxDesktopMenuItem').forEach(el => el.classList.toggle('echelonx-open', !p.hidden));
     if (!p.hidden) status('Changes are stored only after Save + apply.', 'warn');
   }
 
-  function injectMenu() {
-    const menu = document.querySelector('.head .user .user-menu'); if (!menu) return false;
+  function ensureMenuStyle() {
     if (!document.getElementById('echelonxMenuStyle')) {
       const s = document.createElement('style'); s.id = 'echelonxMenuStyle';
-      s.textContent = `.head .user .user-menu #echelonxMenuItem.echelonx-open{margin-bottom:0!important;border-bottom-left-radius:0!important;border-bottom-right-radius:0!important;font-weight:bold!important;background:#fff!important}.head .user .user-menu #echelonxMenuPanel{margin:0 8px 8px 8px;padding:10px;background:#fff;color:#111;text-align:left;border:1px solid #ddd;border-top:0;border-radius:0 0 8px 8px;box-sizing:border-box}.head .user .user-menu #echelonxMenuPanel .echelonx-title{font-weight:bold;margin-bottom:8px}.head .user .user-menu #echelonxMenuPanel .echelonx-row{display:block;padding:5px 0;color:#111;font-size:14px}.head .user .user-menu #echelonxMenuPanel input[type="checkbox"]{transform:scale(1.15);margin-right:5px}.head .user .user-menu #echelonxMenuPanel .echelonx-wide{width:100%;margin:4px 0;padding:8px;font:inherit;box-sizing:border-box}.head .user .user-menu #echelonxMenuPanel .echelonx-primary{padding:10px;font-weight:bold}.head .user .user-menu #echelonxMenuPanel .echelonx-custom-label{display:block;margin-top:8px;font-size:13px}.head .user .user-menu #echelonxMenuPanel textarea{display:block;width:100%;height:86px;box-sizing:border-box;margin-top:4px;font-size:14px}.head .user .user-menu #echelonxStatus{font-size:12px;margin-top:6px;color:#555;line-height:1.25}`;
+      s.textContent = `#echelonxMenuPanel{padding:10px;background:#fff;color:#111;text-align:left;border:1px solid #ddd;box-sizing:border-box}#echelonxMenuPanel .echelonx-title{font-weight:bold;margin-bottom:8px}#echelonxMenuPanel .echelonx-row{display:block;padding:5px 0;color:#111;font-size:14px}#echelonxMenuPanel input[type="checkbox"]{transform:scale(1.15);margin-right:5px}#echelonxMenuPanel .echelonx-wide{width:100%;margin:4px 0;padding:8px;font:inherit;box-sizing:border-box}#echelonxMenuPanel .echelonx-primary{padding:10px;font-weight:bold}#echelonxMenuPanel .echelonx-custom-label{display:block;margin-top:8px;font-size:13px}#echelonxMenuPanel textarea{display:block;width:100%;height:86px;box-sizing:border-box;margin-top:4px;font-size:14px}#echelonxStatus{font-size:12px;margin-top:6px;color:#555;line-height:1.25}.head .user .user-menu #echelonxMenuItem.echelonx-open{margin-bottom:0!important;border-bottom-left-radius:0!important;border-bottom-right-radius:0!important;font-weight:bold!important;background:#fff!important}.head .user .user-menu #echelonxMenuPanel{margin:0 8px 8px 8px;border-top:0;border-radius:0 0 8px 8px}.head #echelonxMenuPanel{float:right;clear:right;width:min(360px,calc(100vw - 24px));margin:4px 0 8px 8px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.2)}#echelonxDesktopMenuItem.echelonx-open{font-weight:bold}`;
       document.head.appendChild(s);
     }
+  }
+
+  function injectMobileMenu() {
+    const menu = document.querySelector('.head .user .user-menu'); if (!menu) return false;
+    ensureMenuStyle();
     let item = document.getElementById('echelonxMenuItem');
     if (!item) {
       item = document.createElement('button'); item.id = 'echelonxMenuItem'; item.type = 'button'; item.setAttribute('role','menuitem'); item.textContent = 'EchelonX'; item.onclick = togglePanel;
@@ -156,6 +167,21 @@
       close.addEventListener('click', () => { document.getElementById('echelonxMenuPanel')?.setAttribute('hidden',''); document.getElementById('echelonxMenuItem')?.classList.remove('echelonx-open'); });
     }
     return true;
+  }
+  function injectDesktopMenu() {
+    const actions = document.querySelector('.head .user .user-actions-inline'); if (!actions) return false;
+    ensureMenuStyle();
+    if (!document.getElementById('echelonxDesktopMenuItem')) {
+      actions.append(document.createTextNode(' | '));
+      const item = document.createElement('a'); item.id = 'echelonxDesktopMenuItem'; item.href = '#0'; item.textContent = 'EchelonX'; item.onclick = togglePanel;
+      actions.append(item);
+    }
+    return true;
+  }
+  function injectMenu() {
+    const mobile = injectMobileMenu();
+    const desktop = injectDesktopMenu();
+    return mobile || desktop;
   }
   function fallbackButton() {
     if (injectMenu()) { document.getElementById('echelonxFloatingButton')?.remove(); return; }
