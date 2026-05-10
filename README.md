@@ -4,7 +4,7 @@ EchelonX is a Tampermonkey userscript for **okoun.cz** that hides and optionally
 
 It is based on the original **Echelonuv filtr**, but updated for newer/mobile Okoun layouts and made less fragile.
 
-Current script version: **0.2.4**
+Current script version: **0.2.5**
 
 ## Install
 

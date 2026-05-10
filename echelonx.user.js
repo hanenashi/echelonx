@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EchelonX
 // @namespace    https://github.com/hanenashi/echelonx
-// @version      0.2.4
+// @version      0.2.5
 // @description  Okoun troll hider/deleter, updated for newer/mobile and desktop Okoun menus.
 // @author       echelon + hanenashi
 // @match        https://*.okoun.cz/*
@@ -17,7 +17,7 @@
   'use strict';
 
   const APP = 'EchelonX';
-  const VERSION = '0.2.4';
+  const VERSION = '0.2.5';
   const PFX = 'cz.ocs.EchelonX.';
   const defaultUsers = 'adijunkt, Bernhard_Weiss, bmn, Brandenburg, Bloodrot, Branimir, bretislav.jonas, d.smiricky, Dagobert_Durr, Das_Reich, florian_geyer, frantisek.kachna, Gotz_Berlichingen, Hajny_Filiburg, hamacek, Handschar, Hilfswilliger, horacek, Horst_Wessel, Charlemagne, Charlemagne_, Isidor, Januar, jarda.dusek, jasanek, Jurij_Ozerov, Kama, Karstjager, Koprovka, Knour, Kpt_Tuma, Landstorm_Netherland, Langemarck, Laser_eye, Lutzow, maqeo.cz, Maria_Theresia, mazurek, mazanej_lucifer, Mudrford, Neknubak, Nibelungen, Nord_, Norland, OberSturmKlippFurher, Oblazek, piANistka, Plch, Plsik_Liskovy, Polizei, pixicz, Prinz_Eugen, profesor_Birkermaier, Protez_alpska, prucha, ritna.diera, vojin.kouba, vonavka, Wallonien, Zufanek';
   const defaultPatterns = 'kouba$';
@@ -190,6 +190,8 @@
     return true;
   }
   function injectDesktopMenu() {
+    const mobileToggle = document.querySelector('.head .user .user-menu-toggle');
+    if (mobileToggle && getComputedStyle(mobileToggle).display !== 'none') return false;
     const mainMenu = document.querySelector('.head .menu'); if (!mainMenu) return false;
     const activeUsers = mainMenu.querySelector('a[href="/activeUsers.jsp"]');
     ensureMenuStyle();
