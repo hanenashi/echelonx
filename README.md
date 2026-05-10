@@ -4,7 +4,7 @@ EchelonX is a Tampermonkey userscript for **okoun.cz** that hides and optionally
 
 It is based on the original **Echelonuv filtr**, but updated for newer/mobile Okoun layouts and made less fragile.
 
-Current script version: **0.2.2**
+Current script version: **0.2.3**
 
 ## Install
 
@@ -31,7 +31,7 @@ It can:
 
 ## Menu / settings UI
 
-On desktop Okoun, EchelonX adds an inline **EchelonX** link next to the user settings/logout links in the page header.
+On desktop Okoun, EchelonX adds an inline **EchelonX** link next to **Přítomní** in the main page menu and opens settings as a popup.
 
 On newer Okoun mobile layout, EchelonX is also wired into the avatar `...` menu.
 
